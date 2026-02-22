@@ -148,10 +148,6 @@ h1 {
   gap: 24px;
 }
 
-.password-group {
-  margin-bottom: 8px;
-}
-
 .checkbox-wrapper {
   display: flex;
   align-items: center;
@@ -177,10 +173,6 @@ h1 {
   font-size: 14px;
   text-align: center;
   border: 1px solid #fee2e2;
-}
-
-.actions {
-  margin-top: 8px;
 }
 
 .animate-slide-up {
