@@ -8,7 +8,7 @@ definePageMeta({
 
 const { login } = useAuth()
 
-const username = ref('')
+const email = ref('')
 const password = ref('')
 const remember = ref(false)
 const error = ref<string | null>(null)
@@ -18,7 +18,7 @@ const handleLogin = async () => {
   try {
     error.value = null
     loading.value = true
-    await login(username.value, password.value, remember.value)
+    await login(email.value, password.value, remember.value)
   } catch (e: any) {
     error.value = e.message || 'Login fehlgeschlagen'
   } finally {
@@ -33,18 +33,17 @@ const handleLogin = async () => {
       <AppCard class="login-card">
         <template #header>
           <div class="header-content">
-            <h1>Anmeldung</h1>
+            <h1>SecureAccess Admin Login</h1>
             <p class="subtitle">
-              Bitte melden Sie sich mit Ihrem Benutzernamen und Passwort an.
+              Bitte melden Sie sich mit Ihrer E-Mail-Adresse und Ihrem Passwort an.
             </p>
           </div>
         </template>
 
         <form @submit.prevent="handleLogin" class="login-form">
           <AppInput
-              v-model="username"
-              label="Benutzername"
-              placeholder="Benutzername eingeben"
+              v-model="email"
+              label="E-Mail"
               required
               :disabled="loading"
           />
@@ -54,7 +53,6 @@ const handleLogin = async () => {
                 v-model="password"
                 type="password"
                 label="Passwort"
-                placeholder="Passwort eingeben"
                 required
                 is-password
                 :disabled="loading"
@@ -97,9 +95,9 @@ const handleLogin = async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #000000;
-  background: linear-gradient(45deg, rgba(0, 0, 0, 1) 0%, rgba(148, 22, 22, 1) 50%, rgba(255, 255, 255, 1) 100%);
-  padding: 20px;
+  background: #b00000;
+  background: -webkit-linear-gradient(45deg, #b00000 0%, #400000 100%);
+  background: linear-gradient(45deg, #b00000 0%, #400000 100%);
   overflow: hidden;
 }
 
@@ -206,5 +204,13 @@ h1 {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+:deep(.label) {
+  font-size: 13px !important;
+}
+
+:deep(.primary:hover) {
+  transform: none !important;
 }
 </style>

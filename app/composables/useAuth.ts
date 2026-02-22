@@ -5,7 +5,7 @@ export const useAuth = () => {
     const loggedIn = computed(() => !!accessToken.value)
 
     const login = async (
-        username: string,
+        email: string,
         password: string,
         remember = false
     ) => {
@@ -20,25 +20,21 @@ export const useAuth = () => {
         })
 
         const response: any = await $fetch(
-            `${config.public.apiBase}/api/latest/auth/local_token`,
+            `${config.public.apiBase}/api/Token/login`,
             {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: new URLSearchParams({
-                    grant_type: 'password',
-                    username,
+                body: {
+                    email,
                     password
-                })
+                }
             }
         )
 
-        at.value = response.access_token
-        rt.value = response.refresh_token
+        at.value = response.token
+        rt.value = response.refreshToken
 
-        accessToken.value = response.access_token
-        refreshToken.value = response.refresh_token
+        accessToken.value = response.token
+        refreshToken.value = response.refreshToken
 
         await navigateTo('/customers')
     }
@@ -48,17 +44,24 @@ export const useAuth = () => {
 
         const config = useRuntimeConfig()
 
-        const response: any = await $fetch(
-            `${config.public.apiBase}/api/latest/auth/refresh`,
-            {
-                method: 'POST',
-                body: {
-                    refresh_token: refreshToken.value
+        try {
+            const response: any = await $fetch(
+                `${config.public.apiBase}/api/Token/refresh`,
+                {
+                    method: 'POST',
+                    body: {
+                        refreshToken: refreshToken.value
+                    }
                 }
-            }
-        )
+            )
 
-        accessToken.value = response.access_token
+            accessToken.value = response.token
+            refreshToken.value = response.refreshToken
+        } catch (error) {
+            accessToken.value = null
+            refreshToken.value = null
+            await navigateTo('/login')
+        }
     }
 
     const logout = async () => {

@@ -11,9 +11,6 @@ const { logout } = useAuth()
     </div>
 
     <div class="actions">
-      <button class="icon-btn">
-        <User :size="20" />
-      </button>
       <button class="icon-btn" @click="logout">
         <LogOut :size="20" />
       </button>
@@ -42,21 +39,18 @@ const { logout } = useAuth()
 }
 
 .icon-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--background);
+  background: none;
   border: none;
+  cursor: pointer;
+  color: var(--text);
+  padding: 10px;
+  transition: transform 0.1s ease-out;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  color: var(--text);
 }
 
 .icon-btn:hover {
-  background: var(--surface-hover);
-  color: var(--primary);
+  transform: scale(1.1);
 }
 </style>
