@@ -109,7 +109,14 @@ const selectCard = (index: number) => {
   
   const customer = filteredCustomers.value[index]
   if (customer && customer.proxyUrl) {
-    window.open(customer.proxyUrl, '_blank')
+    let url = customer.proxyUrl
+    // Remove trailing slash if exists to avoid double slashes
+    url = url.endsWith('/') ? url.slice(0, -1) : url
+    // Append /sso if not already present
+    if (!url.endsWith('/sso')) {
+      url += '/sso'
+    }
+    window.open(url, '_blank')
   }
 }
 

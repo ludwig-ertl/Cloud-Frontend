@@ -1,6 +1,18 @@
 export const useAuth = () => {
-    const accessToken = useCookie<string | null>('access_token')
-    const refreshToken = useCookie<string | null>('refresh_token')
+    // 1. Check if 'remember me' was selected (30 day persistence for this choice too)
+    const authRemember = useCookie<boolean>('auth_remember', {
+        default: () => false,
+        maxAge: 60 * 60 * 24 * 30
+    })
+
+    const cookieOptions = computed(() => ({
+        maxAge: authRemember.value ? 60 * 60 * 24 * 30 : undefined,
+        path: '/'
+    }))
+
+    // 2. Initialize tokens with the current persistence preference
+    const accessToken = useCookie<string | null>('access_token', cookieOptions.value)
+    const refreshToken = useCookie<string | null>('refresh_token', cookieOptions.value)
 
     const loggedIn = computed(() => !!accessToken.value)
 
@@ -11,13 +23,16 @@ export const useAuth = () => {
     ) => {
         const config = useRuntimeConfig()
 
-        const at = useCookie<string | null>('access_token', {
-            maxAge: remember ? 60 * 60 * 24 * 30 : undefined
-        })
+        // Update the preference first
+        authRemember.value = remember
 
-        const rt = useCookie<string | null>('refresh_token', {
-            maxAge: remember ? 60 * 60 * 24 * 30 : undefined
-        })
+        const options = {
+            maxAge: remember ? 60 * 60 * 24 * 30 : undefined,
+            path: '/'
+        }
+
+        const at = useCookie<string | null>('access_token', options)
+        const rt = useCookie<string | null>('refresh_token', options)
 
         const response: any = await $fetch(
             `${config.public.apiBase}/api/Token/login`,
@@ -45,6 +60,14 @@ export const useAuth = () => {
         const config = useRuntimeConfig()
 
         try {
+            const options = {
+                maxAge: authRemember.value ? 60 * 60 * 24 * 30 : undefined,
+                path: '/'
+            }
+
+            const at = useCookie<string | null>('access_token', options)
+            const rt = useCookie<string | null>('refresh_token', options)
+
             const response: any = await $fetch(
                 `${config.public.apiBase}/api/Token/refresh`,
                 {
@@ -54,6 +77,9 @@ export const useAuth = () => {
                     }
                 }
             )
+
+            at.value = response.token
+            rt.value = response.refreshToken
 
             accessToken.value = response.token
             refreshToken.value = response.refreshToken
@@ -65,6 +91,7 @@ export const useAuth = () => {
     }
 
     const logout = async () => {
+        authRemember.value = false
         accessToken.value = null
         refreshToken.value = null
         await navigateTo('/login')
